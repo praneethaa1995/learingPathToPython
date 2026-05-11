@@ -1,49 +1,115 @@
-# TODO: import load_students and save_students from file_handler
-# TODO: import get_letter_grade from utils
-# TODO: import Student from student
+# Import necessary functions and classes from other modules
+from file_handler import save_students,load_students
+from utils import get_letter_grade
+from student import Student
 
-# TODO: define show_menu() — prints the 6 menu options:
-#       1. Add Student
-#       2. View All Students
-#       3. Update Grades
-#       4. Delete Student
-#       5. View Student Report
-#       6. Exit
 
-# TODO: define add_student(students) — ask for name, ask for grades (comma-separated),
-#       convert input to list of floats, create Student(name, grades),
-#       append to students list, call save_students(students)
+def show_menu():
+    """Display the main menu options to the user"""
+    print("\n1. Add Student")
+    print("2. View All Students")
+    print("3. Update Grades")
+    print("4. Delete Student")
+    print("5. View Student Report")
+    print("6. Exit")
 
-# TODO: define view_all(students) — loop through students list,
-#       print each student using print(s) which calls Student.__str__
-#       also print the letter grade using get_letter_grade(s.average())
-#       if list is empty, print "No students found."
+def add_student(students):
+    """Add a new student with their grades to the list"""
+    # Get student name from user
+    name = input("enter student name")
+    # Get grades as comma-separated values and convert to list of floats
+    grades = list(map(float,input("enter grades").split(',')))
+    # Create new Student object and add to list
+    students.append(Student(name,grades))
+    # Save updated list to file
+    save_students(students)
+    print("student added")
 
-# TODO: define update_grades(students) — ask for student name to update,
-#       find the student in the list (loop and match s.name),
-#       ask for new grades (comma-separated), update s.grades,
-#       call save_students(students), print confirmation
-#       if not found, print "Student not found."
+def view_all(students):
+    """Display all students with their grades and letter grades"""
+    if not students:
+        print("No students found.")
+    else:
+        # Loop through each student and display their info
+        for s in students:
+            print(f"{s} | grade: {get_letter_grade(s.average())}")
 
-# TODO: define delete_student(students) — ask for student name to delete,
-#       find and remove the student from the list,
-#       call save_students(students), print confirmation
-#       if not found, print "Student not found."
+def update_grades(students):
+    """Update grades for an existing student"""
+    # Get student name to update
+    name =input("enter your name")
+    # Search for student in list
+    for s in students:
+        if s.name ==name:
+            # Get new grades and update student record
+            grades = list(map(float, input("enter new grades").split(', ')))
+            s.grades = grades
+            # Save changes to file
+            save_students(students)
+            print("grades updated")
+            return
+    # If student not found
+    print("student not found")
 
-# TODO: define view_report(students) — ask for student name,
-#       find the student, print full report:
-#         name, grades list, average (:.2f), letter grade
-#       if not found, print "Student not found."
+def delete_student(students):
+    """Remove a student from the list"""
+    # Get student name to delete
+    name = input("enter student name to delete")
+    # Search for student in list
+    for s in students:
+        if s.name == name:
+           # Remove student from list
+           students.remove(s)
+           # Save changes to file
+           save_students(students)
+           print("student deleted")
+           return
+    # If student not found
+    print("student not found")
 
-# TODO: define main() —
-#       call load_students() to get the students list
-#       start a while True loop:
-#           call show_menu()
-#           read user choice with input()
-#           call the matching function based on choice (1-6)
-#           if choice == "6": print "Goodbye!" and break
-#           handle invalid input with else: print "Invalid choice."
+def view_report(students):
+    """Display detailed report for a specific student"""
+    # Get student name to view
+    name = input("Enter student name: ")
+    # Search for student in list
+    for s in students:
+        if s.name == name:
+            # Display full student report
+            print(f"Name: {s.name}")
+            print(f"Grades: {s.grades}")
+            print(f"Average: {s.average():.2f}")
+            print(f"Letter Grade: {get_letter_grade(s.average())}")
+            return
+    # If student not found
+    print("Student not found.")
 
-# TODO: call main() using:
-# if __name__ == "__main__":
-#     main()
+def main():
+    """Main program loop - handles user interaction"""
+    # Load existing students from file
+    students = load_students()
+    # Keep running until user chooses to exit
+    while True:
+        # Display menu options
+        show_menu()
+        # Get user's choice
+        choice = input("Enter choice: ")
+        # Execute corresponding function based on choice
+        if choice == "1":
+            add_student(students)
+        elif choice == "2":
+            view_all(students)
+        elif choice == "3":
+            update_grades(students)
+        elif choice == "4":
+            delete_student(students)
+        elif choice == "5":
+            view_report(students)
+        elif choice == "6":
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice.")
+
+# Run main() only if this script is executed directly (not imported)
+if __name__ == "__main__":
+    main()
